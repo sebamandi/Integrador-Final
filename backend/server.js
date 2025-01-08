@@ -12,15 +12,19 @@ dotenv.config();
 console.log('Intentando conectar a MongoDB...');
 connectDB()
   .then(() => console.log('MongoDB conectado exitosamente'))
-  .catch(err => console.error('Error al conectar MongoDB:', err));
+  .catch((err) => {
+    console.error('Error al conectar MongoDB:', err);
+    process.exit(1); // Salir del proceso si no se puede conectar a la base de datos
+  });
 
 const app = express();
 
-// Middleware
+// Middleware de CORS
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true
+  origin: ['http://localhost:3000', 'http://localhost:3001'], // Permitir múltiples orígenes
+  credentials: true, // Habilitar cookies y encabezados de autorización
 }));
+
 app.use(express.json());
 app.use(morgan('dev'));
 
@@ -45,17 +49,28 @@ app.use((req, res) => {
 });
 
 // Variables de entorno
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Iniciar el servidor
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Servidor corriendo en modo ${NODE_ENV} en el puerto ${PORT}`);
 });
 
 // Manejo de errores no capturados
 process.on('unhandledRejection', (err) => {
-  console.log('ERROR NO MANEJADO 💥');
-  console.log(err.name, err.message);
-  process.exit(1);
+  console.error('ERROR NO MANEJADO 💥');
+  console.error(err.name, err.message);
+  server.close(() => process.exit(1)); // Cerrar el servidor antes de salir
+});
+
+// Manejo de errores de puerto ocupado
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`El puerto ${PORT} ya está en uso. Intenta con otro puerto.`);
+    process.exit(1);
+  } else {
+    console.error('Error inesperado en el servidor:', err);
+    process.exit(1);
+  }
 });

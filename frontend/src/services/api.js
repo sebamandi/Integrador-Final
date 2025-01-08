@@ -1,13 +1,16 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://localhost:5001/api';
 
-// Servicio de carrito modificado para no enviar token
+// Servicio de carrito
 export const cartService = {
   createCheckout: async (items) => {
     try {
-      return await axios.post(`${API_URL}/cart/checkout`, { items });
+      const response = await axios.post(`${API_URL}/cart/checkout`, { items });
+      console.log('Respuesta del backend:', response.data);
+      return response;
     } catch (error) {
+      console.error('Error al procesar el checkout:', error.response || error.message);
       throw new Error(error.response?.data?.message || 'Error al procesar el checkout');
     }
   },

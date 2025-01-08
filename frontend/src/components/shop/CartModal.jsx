@@ -32,15 +32,14 @@ const CartModal = ({ isVisible, closeModal }) => {
       }
 
       const response = await cartService.createCheckout(cartItems);
-      if (response.data.init_point) {
-        window.location.href = response.data.init_point;
-      } else {
-        showNotification('Error al generar el pago', 'error');
-      }
+      console.log('Respuesta del backend:', response.data);
+
+      showNotification('Compra realizada con éxito', 'success');
+      clearCart(); // Vaciar el carrito después de la compra
     } catch (error) {
       console.error('Error en checkout:', error);
       showNotification(
-        error.response?.data?.message || 'Error al procesar el pago',
+        error.message || 'Error al procesar el pago',
         'error'
       );
     }
@@ -50,20 +49,16 @@ const CartModal = ({ isVisible, closeModal }) => {
 
   return (
     <>
-      {/* Overlay oscuro */}
       <div 
         className="fixed inset-0 bg-black bg-opacity-50 z-40"
         onClick={closeModal}
       />
-      
-      {/* Modal del carrito */}
       <div className="fixed inset-0 z-50 overflow-y-auto">
         <div className="flex min-h-full items-center justify-center p-4">
           <div 
             className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl"
             onClick={e => e.stopPropagation()}
           >
-            {/* Encabezado */}
             <div className="flex justify-between items-center p-6 border-b">
               <h2 className="text-2xl font-bold text-gray-800 flex items-center">
                 Carrito de Compras
@@ -75,8 +70,6 @@ const CartModal = ({ isVisible, closeModal }) => {
                 <X size={24} />
               </button>
             </div>
-
-            {/* Contenido del carrito */}
             <div className="p-6">
               {cartItems.length === 0 ? (
                 <div className="text-center py-12">
@@ -91,14 +84,11 @@ const CartModal = ({ isVisible, closeModal }) => {
                       key={item.id} 
                       className="flex items-center border-b pb-4 last:border-b-0"
                     >
-                      {/* Imagen del producto */}
                       <img 
                         src={item.imageUrl} 
                         alt={item.name}
                         className="w-24 h-24 object-cover rounded-lg mr-6"
                       />
-                      
-                      {/* Detalles del producto */}
                       <div className="flex-grow">
                         <h3 className="font-bold text-lg text-gray-800">
                           {item.name}
@@ -106,8 +96,6 @@ const CartModal = ({ isVisible, closeModal }) => {
                         <p className="text-gray-600">
                           ${item.price.toFixed(2)} c/u
                         </p>
-                        
-                        {/* Controles de cantidad */}
                         <div className="flex items-center mt-2 space-x-3">
                           <button 
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
@@ -129,8 +117,6 @@ const CartModal = ({ isVisible, closeModal }) => {
                           </button>
                         </div>
                       </div>
-
-                      {/* Subtotal y botón de eliminar */}
                       <div className="text-right">
                         <p className="font-bold text-lg text-gray-800">
                           ${(item.price * item.quantity).toFixed(2)}
@@ -147,8 +133,6 @@ const CartModal = ({ isVisible, closeModal }) => {
                 </div>
               )}
             </div>
-
-            {/* Pie de página con totales y acciones */}
             {cartItems.length > 0 && (
               <div className="bg-gray-100 p-6 rounded-b-lg">
                 <div className="flex justify-between items-center mb-6">
@@ -157,7 +141,6 @@ const CartModal = ({ isVisible, closeModal }) => {
                     ${getTotal().toFixed(2)}
                   </span>
                 </div>
-
                 <div className="grid grid-cols-2 gap-4">
                   <Button
                     variant="secondary"

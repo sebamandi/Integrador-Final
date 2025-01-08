@@ -1,7 +1,5 @@
 const asyncHandler = require('../middleware/asyncHandler');
 const Cart = require('../models/Cart');
-const Product = require('../models/Product');
-const { createPreference } = require('../services/mercadopagoService');
 
 // Obtener el carrito del usuario
 exports.getCart = asyncHandler(async (req, res) => {
@@ -63,7 +61,7 @@ exports.clearCart = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: cart });
 });
 
-// Procesar el checkout
+// Procesar el checkout (sin Mercado Pago)
 exports.checkout = asyncHandler(async (req, res) => {
   console.log('Datos de la solicitud:', req.body);
 
@@ -76,20 +74,13 @@ exports.checkout = asyncHandler(async (req, res) => {
 
   console.log('Items para el checkout:', items);
 
-  // Procesar los datos para MercadoPago
-  const preferenceItems = items.map((item) => ({
-    name: item.name,
-    price: item.price,
-    quantity: item.quantity
-  }));
-
+  // Simular procesamiento de compra
   try {
-    const preference = await createPreference(preferenceItems, { email: 'cliente@prueba.com' });
-    console.log('Preferencia creada:', preference.body);
-
-    res.status(200).json({ success: true, data: preference.body });
+    console.log('Simulando procesamiento de compra...');
+    // Aquí puedes guardar el pedido en la base de datos si lo deseas
+    res.status(200).json({ success: true, message: 'Compra procesada correctamente.' });
   } catch (error) {
-    console.error('Error al crear preferencia:', error);
+    console.error('Error al procesar el checkout:', error);
     res.status(500).json({ success: false, message: 'Error al procesar el checkout' });
   }
 });
