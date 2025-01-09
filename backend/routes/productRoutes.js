@@ -13,12 +13,12 @@ const upload = require('../middleware/upload');
 router
   .route('/')
   .get(getProducts)
-  .post(protect, authorize('admin'), upload.single('image'), createProduct);
+  .post(protect, authorize('admin','user'), upload.single('image'), createProduct);
 
 router
   .route('/:id')
   .get(getProduct)
   .put(protect, authorize('admin'), upload.single('image'), updateProduct)
-  .delete(protect, authorize('admin'), deleteProduct);
+  .delete(protect, authorize('admin','user'), deleteProduct);
 
 module.exports = router;

@@ -16,35 +16,30 @@ export const cartService = {
   },
 };
 
-// Servicios adicionales (sin cambios en esta versión)
-export const authService = {
-  login: async (email, password) => {
-    try {
-      const response = await axios.post(`${API_URL}/auth/login`, { email, password });
-      const { token } = response.data;
-      localStorage.setItem('token', token); // Guardar el token en localStorage
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response?.data?.message || 'Error al iniciar sesión');
-    }
-  },
-};
-
+// Servicios de productos
 export const productService = {
-  createProduct: async (productData) => {
+  create: async (formData) => {
     try {
-      return await axios.post(`${API_URL}/products`, productData);
+      const response = await axios.post(`${API_URL}/products`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      console.log('Producto creado:', response.data);
+      return response;
     } catch (error) {
-      throw new Error(error.response?.data?.message || 'Error al crear el producto');
+      console.error('Error al crear producto:', error.response || error.message);
+      throw new Error(error.response?.data?.message || 'Error al crear producto');
     }
   },
 };
 
+// Servicio de contacto
 export const contactService = {
   sendContact: async (contactData) => {
     try {
-      return await axios.post(`${API_URL}/contact`, contactData);
+      const response = await axios.post(`${API_URL}/contact`, contactData);
+      return response;
     } catch (error) {
+      console.error('Error al enviar contacto:', error.response || error.message);
       throw new Error(error.response?.data?.message || 'Error al enviar el mensaje de contacto');
     }
   },

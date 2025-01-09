@@ -22,7 +22,7 @@ const app = express();
 // Middleware de CORS
 app.use(cors({
   origin: ['http://localhost:3000', 'http://localhost:3001'], // Permitir múltiples orígenes
-  credentials: true, // Habilitar cookies y encabezados de autorización
+  credentials: true, 
 }));
 
 app.use(express.json());
